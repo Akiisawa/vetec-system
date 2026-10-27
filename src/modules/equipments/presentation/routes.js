@@ -1,0 +1,11 @@
+const { Router } = require('express');
+const { EquipmentsService } = require('../application/equipments-service');
+const { requirePermission } = require('../../../app/middleware/rbac');
+const router = Router();
+const pag = (q) => ({page:Number(q.page)||1,pageSize:Math.min(Number(q.pageSize)||10,100),search:q.search||'',status:q.status||''});
+router.get('/',requirePermission('equipments','read'),(req,res,next)=>{try{res.json({ok:true,data:EquipmentsService.list(pag(req.query))})}catch(e){next(e)}});
+router.get('/:id',requirePermission('equipments','read'),(req,res,next)=>{try{res.json({ok:true,data:EquipmentsService.get(Number(req.params.id))})}catch(e){next(e)}});
+router.post('/',requirePermission('equipments','write'),(req,res,next)=>{try{res.status(201).json({ok:true,data:EquipmentsService.create(req.body,req.user.id)})}catch(e){next(e)}});
+router.patch('/:id',requirePermission('equipments','write'),(req,res,next)=>{try{res.json({ok:true,data:EquipmentsService.update(Number(req.params.id),req.body,req.user.id)})}catch(e){next(e)}});
+router.delete('/:id',requirePermission('equipments','write'),(req,res,next)=>{try{res.json({ok:true,data:EquipmentsService.remove(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+module.exports = router;

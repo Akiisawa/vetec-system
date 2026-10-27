@@ -1,0 +1,11 @@
+const { Router } = require('express');
+const { UsersService } = require('../application/users-service');
+const { requirePermission } = require('../../../app/middleware/rbac');
+const router = Router();
+const pag = (q) => ({page:Number(q.page)||1,pageSize:Math.min(Number(q.pageSize)||10,100),search:q.search||''});
+router.get('/',requirePermission('users','read'),(req,res,next)=>{try{res.json({ok:true,data:UsersService.list(pag(req.query))})}catch(e){next(e)}});
+router.get('/:id',requirePermission('users','read'),(req,res,next)=>{try{res.json({ok:true,data:UsersService.get(Number(req.params.id))})}catch(e){next(e)}});
+router.post('/',requirePermission('users','write'),async(req,res,next)=>{try{res.status(201).json({ok:true,data:await UsersService.create(req.body,req.user.id)})}catch(e){next(e)}});
+router.patch('/:id',requirePermission('users','write'),(req,res,next)=>{try{res.json({ok:true,data:UsersService.update(Number(req.params.id),req.body,req.user.id)})}catch(e){next(e)}});
+router.delete('/:id',requirePermission('users','write'),(req,res,next)=>{try{res.json({ok:true,data:UsersService.remove(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+module.exports = router;

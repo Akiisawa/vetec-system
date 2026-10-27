@@ -1,0 +1,10 @@
+const { Router } = require('express');
+const { NotificationsService } = require('../application/notifications-service');
+const { requirePermission } = require('../../../app/middleware/rbac');
+const router = Router();
+router.get('/',requirePermission('notifications','read'),(req,res,next)=>{try{res.json({ok:true,data:NotificationsService.list(req.user.id)})}catch(e){next(e)}});
+router.get('/unread',requirePermission('notifications','read'),(req,res,next)=>{try{res.json({ok:true,data:NotificationsService.unread(req.user.id)})}catch(e){next(e)}});
+router.patch('/:id/read',requirePermission('notifications','write'),(req,res,next)=>{try{res.json({ok:true,data:NotificationsService.markRead(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+router.post('/read-all',requirePermission('notifications','write'),(req,res,next)=>{try{res.json({ok:true,data:NotificationsService.markAllRead(req.user.id)})}catch(e){next(e)}});
+router.delete('/:id',requirePermission('notifications','write'),(req,res,next)=>{try{res.json({ok:true,data:NotificationsService.remove(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+module.exports = router;

@@ -1,0 +1,14 @@
+const { Router } = require('express');
+const { authenticate } = require('../middleware/auth');
+const router = Router();
+router.use('/auth', require('../../modules/auth/presentation/routes'));
+router.use('/users',     authenticate, require('../../modules/users/presentation/routes'));
+router.use('/customers', authenticate, require('../../modules/customers/presentation/routes'));
+router.use('/projects',  authenticate, require('../../modules/projects/presentation/routes'));
+router.use('/equipments',    authenticate, require('../../modules/equipments/presentation/routes'));
+router.use('/tasks',         authenticate, require('../../modules/tasks/presentation/routes'));
+router.use('/service-orders',authenticate, require('../../modules/service-orders/presentation/routes'));
+router.use('/notifications', authenticate, require('../../modules/notifications/presentation/routes'));
+router.use('/reports',   authenticate, require('../../modules/reports/presentation/routes'));
+router.use('/audit',     authenticate, require('../../modules/audit/presentation/routes'));
+module.exports = router;

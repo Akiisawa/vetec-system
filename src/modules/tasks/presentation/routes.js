@@ -1,0 +1,11 @@
+const { Router } = require('express');
+const { TasksService } = require('../application/tasks-service');
+const { requirePermission } = require('../../../app/middleware/rbac');
+const router = Router();
+const pag = (q) => ({page:Number(q.page)||1,pageSize:Math.min(Number(q.pageSize)||10,100),search:q.search||'',status:q.status||'',priority:q.priority||'',projectId:q.projectId||''});
+router.get('/',requirePermission('tasks','read'),(req,res,next)=>{try{res.json({ok:true,data:TasksService.list(pag(req.query, req.user))})}catch(e){next(e)}});
+router.get('/:id',requirePermission('tasks','read'),(req,res,next)=>{try{res.json({ok:true,data:TasksService.get(Number(req.params.id))})}catch(e){next(e)}});
+router.post('/',requirePermission('tasks','write'),(req,res,next)=>{try{res.status(201).json({ok:true,data:TasksService.create(req.body,req.user.id)})}catch(e){next(e)}});
+router.patch('/:id',requirePermission('tasks','write'),(req,res,next)=>{try{res.json({ok:true,data:TasksService.update(Number(req.params.id),req.body,req.user.id)})}catch(e){next(e)}});
+router.delete('/:id',requirePermission('tasks','write'),(req,res,next)=>{try{res.json({ok:true,data:TasksService.remove(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+module.exports = router;

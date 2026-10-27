@@ -1,0 +1,11 @@
+const { Router } = require('express');
+const { ServiceOrdersService } = require('../application/service-orders-service');
+const { requirePermission } = require('../../../app/middleware/rbac');
+const router = Router();
+const pag = (q) => ({page:Number(q.page)||1,pageSize:Math.min(Number(q.pageSize)||10,100),search:q.search||'',status:q.status||'',priority:q.priority||''});
+router.get('/',requirePermission('service-orders','read'),(req,res,next)=>{try{res.json({ok:true,data:ServiceOrdersService.list(pag(req.query))})}catch(e){next(e)}});
+router.get('/:id',requirePermission('service-orders','read'),(req,res,next)=>{try{res.json({ok:true,data:ServiceOrdersService.get(Number(req.params.id))})}catch(e){next(e)}});
+router.post('/',requirePermission('service-orders','write'),(req,res,next)=>{try{res.status(201).json({ok:true,data:ServiceOrdersService.create(req.body,req.user.id)})}catch(e){next(e)}});
+router.patch('/:id',requirePermission('service-orders','write'),(req,res,next)=>{try{res.json({ok:true,data:ServiceOrdersService.update(Number(req.params.id),req.body,req.user.id)})}catch(e){next(e)}});
+router.delete('/:id',requirePermission('service-orders','write'),(req,res,next)=>{try{res.json({ok:true,data:ServiceOrdersService.remove(Number(req.params.id),req.user.id)})}catch(e){next(e)}});
+module.exports = router;
